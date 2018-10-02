@@ -16,7 +16,7 @@ router.beforeEach((to, from, next) => {
       if (!store.getters.name) {
         store
           .dispatch('GetInfo')
-          .then(res => {
+          .then(() => {
             // 拉取用户信息
             next()
           })

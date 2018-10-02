@@ -41,6 +41,19 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/topchannel',
+    component: Layout,
+    redirect: '/topchannel/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/topchannel/index'),
+        name: 'Topchannel',
+        meta: { title: '顶级栏目', icon: 'nested' }
+      }
+    ]
+  },
   { path: '*', redirect: '/404', hidden: true }
 ]
 

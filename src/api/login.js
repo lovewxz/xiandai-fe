@@ -1,8 +1,9 @@
 import request from '@/utils/request'
+import Config from '@/config'
 
 export function login(username, password) {
   return request({
-    url: '/userAccess/login',
+    url: `${Config.apiPrefix}/userAccess/login`,
     method: 'post',
     data: {
       login_name: username,
@@ -13,14 +14,14 @@ export function login(username, password) {
 
 export function getInfo() {
   return request({
-    url: '/user/info',
+    url: `${Config.apiPrefix}/user/info`,
     method: 'get'
   })
 }
 
 export function logout() {
   return request({
-    url: '/userAccess/logout',
+    url: `${Config.apiPrefix}/userAccess/logout`,
     method: 'post'
   })
 }
