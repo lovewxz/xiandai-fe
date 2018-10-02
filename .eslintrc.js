@@ -14,7 +14,7 @@ module.exports = {
   // add your custom rules here
   //it is base on https://github.com/vuejs/eslint-config-vue
   rules: {
-    "vue/max-attributes-per-line": [2, {
+    "vue/max-attributes-per-line": [4, {
       "singleline": 10,
       "multiline": {
         "max": 1,
@@ -187,10 +187,7 @@ module.exports = {
     'yoda': [2, 'never'],
     'prefer-const': 2,
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
-    'object-curly-spacing': [2, 'always', {
-      objectsInObjects: false
-    }],
+    'object-curly-spacing': ["error", "always"],
     'array-bracket-spacing': [2, 'never']
   }
 }
-

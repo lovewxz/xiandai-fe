@@ -2,26 +2,25 @@ import request from '@/utils/request'
 
 export function login(username, password) {
   return request({
-    url: '/user/login',
+    url: '/userAccess/login',
     method: 'post',
     data: {
-      username,
-      password
+      login_name: username,
+      login_pwd: password
     }
   })
 }
 
-export function getInfo(token) {
+export function getInfo() {
   return request({
     url: '/user/info',
-    method: 'get',
-    params: { token }
+    method: 'get'
   })
 }
 
 export function logout() {
   return request({
-    url: '/user/logout',
+    url: '/userAccess/logout',
     method: 'post'
   })
 }
