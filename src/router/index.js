@@ -54,6 +54,19 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/contentclass',
+    component: Layout,
+    redirect: '/contentclass/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/contentclass/index'),
+        name: 'ContentClass',
+        meta: { title: '分类', icon: 'nested' }
+      }
+    ]
+  },
   { path: '*', redirect: '/404', hidden: true }
 ]
 
