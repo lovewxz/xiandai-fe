@@ -67,6 +67,37 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/doctor',
+    component: Layout,
+    redirect: '/doctor/create',
+    name: 'Doctor',
+    meta: {
+      title: '专家团队',
+      icon: 'peoples'
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/doctor/list'),
+        name: 'ArticleList',
+        meta: { title: '医生列表', icon: 'list' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/doctor/create'),
+        name: 'CreateArticle',
+        meta: { title: '新建医生', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/doctor/edit'),
+        name: 'EditArticle',
+        meta: { title: '编辑医生', noCache: true },
+        hidden: true
+      }
+    ]
+  },
   { path: '*', redirect: '/404', hidden: true }
 ]
 
