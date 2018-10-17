@@ -6,8 +6,10 @@
              label-position="top"
              class="form-container">
       <sticky>
-        <el-button style="margin-left: 10px;"
-                   type="success">发布
+        <el-button :loading="loading"
+                   style="margin-left: 10px;"
+                   type="success"
+                   @click="handleSubmit">发布
         </el-button>
         <el-button type="warning">草稿</el-button>
       </sticky>
@@ -65,14 +67,14 @@
         <el-row>
           <el-col :span="10">
             <el-form-item label="缩略图:">
-              <upload v-show="!postForm.img_url">
+              <upload @success="handleIMGSubmit">
                 <i class="el-icon-plus"></i>
               </upload>
             </el-form-item>
           </el-col>
           <el-col :span="10">
             <el-form-item label="列表页缩略图:">
-              <upload v-show="!postForm.list_url">
+              <upload @success="handleListSubmit">
                 <i class="el-icon-plus"></i>
               </upload>
             </el-form-item>
@@ -129,7 +131,8 @@ export default {
             trigger: 'change'
           }
         ]
-      }
+      },
+      loading: false
     }
   },
   methods: {
@@ -141,6 +144,27 @@ export default {
         this.postForm.goods_project.indexOf(val),
         1
       )
+    },
+    // 缩略图
+    handleIMGSubmit(file) {
+      this.postForm.img_url = file.key
+    },
+    // 列表缩略图
+    handleListSubmit(file) {
+      this.postForm.list_url = file.key
+    },
+    handleSubmit() {
+      this.$refs.postForm.validate(valid => {
+        if (valid) {
+          console.log(this.postForm)
+          this.$notify({
+            title: '成功',
+            message: '发布文章成功',
+            type: 'success',
+            duration: 2000
+          })
+        }
+      })
     }
   }
 }
