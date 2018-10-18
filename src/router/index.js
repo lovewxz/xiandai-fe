@@ -80,19 +80,19 @@ export const constantRouterMap = [
       {
         path: 'list',
         component: () => import('@/views/doctor/list'),
-        name: 'ArticleList',
+        name: 'DoctorArticleList',
         meta: { title: '医生列表', icon: 'list' }
       },
       {
         path: 'create',
         component: () => import('@/views/doctor/create'),
-        name: 'CreateArticle',
+        name: 'DoctorCreateArticle',
         meta: { title: '新建医生', icon: 'edit' }
       },
       {
         path: 'edit/:id(\\d+)',
         component: () => import('@/views/doctor/edit'),
-        name: 'EditArticle',
+        name: 'DoctorEditArticle',
         meta: { title: '编辑医生', noCache: true },
         hidden: true
       }

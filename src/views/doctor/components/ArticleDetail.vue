@@ -99,6 +99,7 @@ import MDinput from '@/components/MDinput'
 import Tags from '@/components/Tags'
 import Upload from '@/components/Upload'
 import Sticky from '@/components/Sticky'
+import { create } from '@/api/doctor'
 
 const defaultForm = {
   title: '',
@@ -156,12 +157,16 @@ export default {
     handleSubmit() {
       this.$refs.postForm.validate(valid => {
         if (valid) {
-          console.log(this.postForm)
-          this.$notify({
-            title: '成功',
-            message: '发布文章成功',
-            type: 'success',
-            duration: 2000
+          create(this.postForm).then(res => {
+            if (res.code === 200) {
+              this.$notify({
+                title: '成功',
+                message: '发布文章成功',
+                type: 'success',
+                duration: 2000
+              })
+              this.$router.push({ name: 'DoctorArticleList' })
+            }
           })
         }
       })
