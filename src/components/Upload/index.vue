@@ -7,7 +7,7 @@
              :file-list="fileList"
              :multiple="multiple"
              action="//up-z2.qiniu.com/"
-             list-type="picture-card"
+             list-type="picture"
              class="upload">
     <slot></slot>
   </el-upload>
@@ -37,6 +37,11 @@ export default {
   },
   methods: {
     handleSuccess(response, file, fileList) {
+      if (!this.multiple) {
+        if (fileList.length > 1) {
+          fileList.shift()
+        }
+      }
       this.$emit('success', response, file, fileList)
     },
     handleRemove(file, fileList) {

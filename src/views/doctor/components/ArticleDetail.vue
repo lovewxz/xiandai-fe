@@ -47,35 +47,40 @@
                           label-width="80px"
                           label="点赞次数:"
                           align="left">
-              <el-input v-model="postForm.up_hits"></el-input>
+              <el-input v-model.number="postForm.up_hits"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="5">
             <el-form-item label-width="80px"
                           label="预约次数:"
                           align="left">
-              <el-input v-model="postForm.appointment_count"></el-input>
+              <el-input v-model.number="postForm.appointment_count"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-form-item label="擅长项目:">
-          <tags :dynamic-tags="postForm.goods_project"
+          <tags v-show="postForm.goods_project.length > 0"
+                :dynamic-tags="postForm.goods_project"
                 add-text="添加擅长项目"
                 @add="handleInputAdd"
                 @close="handleInputClose"></tags>
         </el-form-item>
-        <el-row>
-          <el-col :span="10">
+        <el-row :gutter="60">
+          <el-col :span="12">
             <el-form-item label="缩略图:">
-              <upload @success="handleIMGSubmit">
-                <i class="el-icon-plus"></i>
+              <upload :file-list="imgFileListUrl"
+                      @success="handleIMGSubmit">
+                <el-button icon="el-icon-plus"
+                           type="primary">添加图片</el-button>
               </upload>
             </el-form-item>
           </el-col>
-          <el-col :span="10">
+          <el-col :span="12">
             <el-form-item label="列表页缩略图:">
-              <upload @success="handleListSubmit">
-                <i class="el-icon-plus"></i>
+              <upload :file-list="listFileListUrl"
+                      @success="handleListSubmit">
+                <el-button icon="el-icon-plus"
+                           type="primary">添加图片</el-button>
               </upload>
             </el-form-item>
           </el-col>
@@ -99,7 +104,8 @@ import MDinput from '@/components/MDinput'
 import Tags from '@/components/Tags'
 import Upload from '@/components/Upload'
 import Sticky from '@/components/Sticky'
-import { create } from '@/api/doctor'
+import { create, fetchDataById, update } from '@/api/doctor'
+import config from '@/config'
 
 const defaultForm = {
   title: '',
@@ -121,6 +127,12 @@ export default {
     Upload,
     Sticky
   },
+  props: {
+    isEdit: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       postForm: Object.assign({}, defaultForm),
@@ -134,6 +146,36 @@ export default {
         ]
       },
       loading: false
+    }
+  },
+  computed: {
+    imgFileListUrl() {
+      if (this.postForm.img_url) {
+        return [
+          {
+            url: `${config.qiniuURL}/${this.postForm.img_url}`,
+            name: this.postForm.img_url
+          }
+        ]
+      }
+    },
+    listFileListUrl() {
+      if (this.postForm.list_url) {
+        return [
+          {
+            url: `${config.qiniuURL}/${this.postForm.list_url}`,
+            name: this.postForm.list_url
+          }
+        ]
+      }
+    }
+  },
+  created() {
+    if (this.isEdit) {
+      const { id } = this.$route.params
+      this.getDoctorById(id)
+    } else {
+      this.postForm = Object.assign({}, defaultForm)
     }
   },
   methods: {
@@ -157,17 +199,39 @@ export default {
     handleSubmit() {
       this.$refs.postForm.validate(valid => {
         if (valid) {
-          create(this.postForm).then(res => {
-            if (res.code === 200) {
-              this.$notify({
-                title: '成功',
-                message: '发布文章成功',
-                type: 'success',
-                duration: 2000
-              })
-              this.$router.push({ name: 'DoctorArticleList' })
-            }
-          })
+          const { id } = this.$route.params
+          if (id) {
+            update(id, this.postForm).then(res => {
+              if (res.code === 200) {
+                this.$router.push({ name: 'DoctorArticleList' })
+                this.$notify({
+                  title: '成功',
+                  message: '发布文章成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
+            })
+          } else {
+            create(this.postForm).then(res => {
+              if (res.code === 200) {
+                this.$router.push({ name: 'DoctorArticleList' })
+                this.$notify({
+                  title: '成功',
+                  message: '发布文章成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
+            })
+          }
+        }
+      })
+    },
+    getDoctorById(id) {
+      fetchDataById(id).then(res => {
+        if (res.code === 200) {
+          this.postForm = res.data
         }
       })
     }

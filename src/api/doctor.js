@@ -16,9 +16,9 @@ export function index() {
   })
 }
 
-export function update(data) {
+export function update(id, data) {
   return request({
-    url: `${Config.apiPrefix}/doctor/${data.class_id}`,
+    url: `${Config.apiPrefix}/doctor/${id}`,
     method: 'put',
     data
   })
@@ -28,5 +28,12 @@ export function del(id) {
   return request({
     url: `${Config.apiPrefix}/doctor/${id}`,
     method: 'delete'
+  })
+}
+
+export function fetchDataById(id) {
+  return request({
+    url: `${Config.apiPrefix}/doctor/${id}`,
+    method: 'get'
   })
 }

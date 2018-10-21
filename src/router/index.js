@@ -90,7 +90,7 @@ export const constantRouterMap = [
         meta: { title: '新建医生', icon: 'edit' }
       },
       {
-        path: 'edit/:id(\\d+)',
+        path: 'edit/:id',
         component: () => import('@/views/doctor/edit'),
         name: 'DoctorEditArticle',
         meta: { title: '编辑医生', noCache: true },
