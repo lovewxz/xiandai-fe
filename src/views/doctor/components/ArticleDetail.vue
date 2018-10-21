@@ -35,11 +35,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="7">
-            <el-form-item prop="sub_title"
+            <el-form-item prop="profession"
                           label-width="80px"
                           label="医生头衔:"
                           align="left">
-              <el-input v-model="postForm.sub_title"></el-input>
+              <el-input v-model="postForm.profession"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="5">
@@ -108,10 +108,12 @@ import { create, fetchDataById, update } from '@/api/doctor'
 import config from '@/config'
 
 const defaultForm = {
+  status: 1,
+  profession: '', // 医生职称
   title: '',
   content: '',
   doctor_name: '', // 医生姓名
-  sub_title: '', // 医生职称
+  sub_title: '', // 副标题
   up_hits: 0, // 点赞次数
   appointment_count: 0, // 预约次数
   img_url: '', // 缩略图

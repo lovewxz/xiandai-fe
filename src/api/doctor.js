@@ -33,7 +33,7 @@ export function del(id) {
 
 export function fetchDataById(id) {
   return request({
-    url: `${Config.apiPrefix}/doctor/${id}`,
+    url: `${Config.apiPrefix}/doctor/${id}/edit`,
     method: 'get'
   })
 }
