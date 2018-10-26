@@ -6,7 +6,7 @@
 import ArticleDetail from './components/ArticleDetail'
 
 export default {
-  name: 'CreateDoctor',
+  name: 'CreateCase',
   components: { ArticleDetail }
 }
 </script>

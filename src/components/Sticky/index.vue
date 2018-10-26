@@ -19,7 +19,7 @@ export default {
     },
     zIndex: {
       type: Number,
-      default: 1
+      default: 1000
     },
     className: {
       type: String,

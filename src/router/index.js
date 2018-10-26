@@ -98,6 +98,43 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/case',
+    component: Layout,
+    redirect: '/case/create',
+    name: 'Case',
+    meta: {
+      title: '案例日记',
+      icon: 'people'
+    },
+    children: [
+      {
+        path: 'category',
+        component: () => import('@/views/case/category'),
+        name: 'CaseCategory',
+        meta: { title: '案例分类', icon: 'nested' }
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/case/list'),
+        name: 'CaseArticleList',
+        meta: { title: '案例列表', icon: 'list' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/case/create'),
+        name: 'CaseCreateArticle',
+        meta: { title: '新建案例', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id',
+        component: () => import('@/views/case/edit'),
+        name: 'CaseEditArticle',
+        meta: { title: '编辑案例', noCache: true },
+        hidden: true
+      }
+    ]
+  },
   { path: '*', redirect: '/404', hidden: true }
 ]
 

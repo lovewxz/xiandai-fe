@@ -11,7 +11,8 @@
                    type="success"
                    @click="handleSubmit">发布
         </el-button>
-        <el-button type="warning">草稿</el-button>
+        <el-button type="warning"
+                   @click="handleDraft">草稿</el-button>
       </sticky>
       <div class="createPost-main-container">
         <el-form-item style="margin-bottom: 40px;"
@@ -59,8 +60,7 @@
           </el-col>
         </el-row>
         <el-form-item label="擅长项目:">
-          <tags v-show="postForm.goods_project.length > 0"
-                :dynamic-tags="postForm.goods_project"
+          <tags :dynamic-tags="postForm.goods_project"
                 add-text="添加擅长项目"
                 @add="handleInputAdd"
                 @close="handleInputClose"></tags>
@@ -108,12 +108,11 @@ import { create, fetchDataById, update } from '@/api/doctor'
 import config from '@/config'
 
 const defaultForm = {
-  status: 1,
+  status: '1',
   profession: '', // 医生职称
   title: '',
   content: '',
   doctor_name: '', // 医生姓名
-  sub_title: '', // 副标题
   up_hits: 0, // 点赞次数
   appointment_count: 0, // 预约次数
   img_url: '', // 缩略图
@@ -199,11 +198,17 @@ export default {
       this.postForm.list_url = file.key
     },
     handleSubmit() {
+      this.submit(Object.assign(this.postForm, { status: '1' }))
+    },
+    handleDraft() {
+      this.submit(Object.assign(this.postForm, { status: '0' }))
+    },
+    submit(postForm) {
       this.$refs.postForm.validate(valid => {
         if (valid) {
           const { id } = this.$route.params
           if (id) {
-            update(id, this.postForm).then(res => {
+            update(id, postForm).then(res => {
               if (res.code === 200) {
                 this.$router.push({ name: 'DoctorArticleList' })
                 this.$notify({
@@ -215,7 +220,7 @@ export default {
               }
             })
           } else {
-            create(this.postForm).then(res => {
+            create(postForm).then(res => {
               if (res.code === 200) {
                 this.$router.push({ name: 'DoctorArticleList' })
                 this.$notify({

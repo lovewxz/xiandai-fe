@@ -6,8 +6,8 @@
              :data="imgData"
              :file-list="fileList"
              :multiple="multiple"
+             :list-type="listType"
              action="//up-z2.qiniu.com/"
-             list-type="picture"
              class="upload">
     <slot></slot>
   </el-upload>
@@ -28,6 +28,10 @@ export default {
     multiple: {
       type: Boolean,
       default: false
+    },
+    listType: {
+      type: String,
+      default: 'picture'
     }
   },
   data() {
