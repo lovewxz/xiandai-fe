@@ -1,35 +1,37 @@
 <template>
   <div class="category-list">
-    <el-tree :data="cateList"
-             :props="defaultProps"
-             :expand-on-click-node="false"
-             show-checkbox
-             node-key="class_id"
-             default-expand-all
-             class="category-tree">
-      <span slot-scope="{ node, data }"
-            class="custom-tree-node">
-        <span>
-          <span>{{ node.label }}</span>
+    <el-card class="tree-list">
+      <el-tree :data="cateList"
+               :props="defaultProps"
+               :expand-on-click-node="false"
+               show-checkbox
+               node-key="class_id"
+               default-expand-all
+               class="category-tree">
+        <span slot-scope="{ node, data }"
+              class="custom-tree-node">
+          <span>
+            <span>{{ node.label }}</span>
+          </span>
+          <span>
+            <el-button type="success"
+                       icon="el-icon-plus"
+                       size="mini" />
+            <el-button type="warning"
+                       icon="el-icon-edit"
+                       size="mini" />
+            <el-button type="danger"
+                       icon="el-icon-delete"
+                       size="mini" />
+          </span>
         </span>
-        <span>
-          <el-button type="success"
-                     icon="el-icon-plus"
-                     size="mini" />
-          <el-button type="warning"
-                     icon="el-icon-edit"
-                     size="mini" />
-          <el-button type="danger"
-                     icon="el-icon-delete"
-                     size="mini" />
-        </span>
-      </span>
-    </el-tree>
-    <el-col :span="24"
-            class="toolbar">
-      <el-button type="primary"
-                 @click="appendTop">添加顶级栏目</el-button>
-    </el-col>
+      </el-tree>
+      <el-col :span="24"
+              class="toolbar">
+        <el-button type="primary"
+                   @click="appendTop">添加顶级栏目</el-button>
+      </el-col>
+    </el-card>
     <category-dialog ref="dialog"
                      :channel-id="channelId"
                      :is-top="isTop"
@@ -85,15 +87,11 @@ export default {
 <style lang="scss">
 .category-list {
   padding: 20px;
-  .category-tree {
-    border: 1px solid #d1dbe5;
-    padding: 10px 0;
-    .el-tree-node__content {
-      height: 36px;
-      line-height: 36px;
-      cursor: pointer;
-      border-bottom: 1px dashed #ddd;
-    }
+  .tree-list {
+    padding-bottom: 30px;
+  }
+  .el-tree-node__content {
+    height: 40px;
   }
   .custom-tree-node {
     flex: 1;
