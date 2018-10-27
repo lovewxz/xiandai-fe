@@ -68,7 +68,7 @@
         <el-row :gutter="60">
           <el-col :span="12">
             <el-form-item label="缩略图:">
-              <upload :file-list="imgFileListUrl"
+              <upload :file-list="postForm.img_url"
                       @success="handleIMGSubmit">
                 <el-button icon="el-icon-plus"
                            type="primary">添加图片</el-button>
@@ -77,7 +77,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="列表页缩略图:">
-              <upload :file-list="listFileListUrl"
+              <upload :file-list="postForm.list_url"
                       @success="handleListSubmit">
                 <el-button icon="el-icon-plus"
                            type="primary">添加图片</el-button>
@@ -105,7 +105,6 @@ import Tags from '@/components/Tags'
 import Upload from '@/components/Upload'
 import Sticky from '@/components/Sticky'
 import { create, fetchDataById, update } from '@/api/doctor'
-import config from '@/config'
 
 const defaultForm = {
   status: '1',
@@ -147,28 +146,6 @@ export default {
         ]
       },
       loading: false
-    }
-  },
-  computed: {
-    imgFileListUrl() {
-      if (this.postForm.img_url) {
-        return [
-          {
-            url: `${config.qiniuURL}/${this.postForm.img_url}`,
-            name: this.postForm.img_url
-          }
-        ]
-      }
-    },
-    listFileListUrl() {
-      if (this.postForm.list_url) {
-        return [
-          {
-            url: `${config.qiniuURL}/${this.postForm.list_url}`,
-            name: this.postForm.list_url
-          }
-        ]
-      }
     }
   },
   created() {

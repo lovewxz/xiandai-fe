@@ -4,7 +4,7 @@
              :on-remove="handleRemove"
              :before-upload="beforeUpload"
              :data="imgData"
-             :file-list="fileList"
+             :file-list="picList"
              :multiple="multiple"
              :list-type="listType"
              action="//up-z2.qiniu.com/"
@@ -15,12 +15,13 @@
 <script>
 import { getUploadToken } from '@/api/upload'
 import randomToken from 'random-token'
+import config from '@/config'
 
 export default {
   name: 'CustomUpload',
   props: {
     fileList: {
-      type: Array,
+      type: null,
       default: () => {
         return []
       }
@@ -36,7 +37,22 @@ export default {
   },
   data() {
     return {
-      imgData: {}
+      imgData: {},
+      picList: []
+    }
+  },
+  watch: {
+    fileList: {
+      deep: true,
+      handler(newVal) {
+        newVal = Array.isArray(newVal) ? newVal : [newVal]
+        this.picList = newVal.map(item => {
+          return {
+            url: `${config.qiniuURL}/${item}`,
+            name: item
+          }
+        })
+      }
     }
   },
   methods: {

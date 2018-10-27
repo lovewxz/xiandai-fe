@@ -28,29 +28,19 @@
         <el-row>
           <el-col :span="6">
             <el-form-item :rules="[
-                            { required: true, message: '请输入案例姓名', trigger: 'change' }
+                            { required: true, message: '请选择推荐医生', trigger: 'change' }
                           ]"
                           prop="name"
-                          label="案例姓名">
-              <el-input v-model="postForm.name"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12"
-                  :offset="3">
-            <el-form-item prop="build_plan"
-                          label="打造方案">
-              <tags :dynamic-tags="postForm.build_plan"
-                    add-text="添加打造方案"
-                    @add="handleInputAdd"
-                    @close="handleInputClose"></tags>
+                          label="推荐医生">
+              <el-input v-model="postForm.doctor_id"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-form-item :rules="[
-                        { required: true, message: '请输入列表页简介', trigger: 'change' }
+                        { required: true, message: '请输入恢复时间', trigger: 'change' }
                       ]"
                       prop="introduction"
-                      label="列表页简介">
+                      label="恢复时间">
           <el-input :row="1"
                     v-model="postForm.introduction"
                     type="textarea"
@@ -63,11 +53,11 @@
         <el-row :gutter="60">
           <el-col :span="12">
             <el-form-item :rules="[
-                            { required: true, message: '请上传人物缩略图', trigger: 'change' }
+                            { required: true, message: '项目图标', trigger: 'change' }
                           ]"
                           prop="head_img"
-                          label="人物缩略图:">
-              <upload :file-list="postForm.head_img"
+                          label="项目图标:">
+              <upload :file-list="imgFileListUrl"
                       @success="handleIMGSubmit">
                 <el-button icon="el-icon-plus"
                            type="primary">添加图片</el-button>
@@ -79,8 +69,8 @@
                             { required: true, message: '请添加对比图', trigger: 'change' }
                           ]"
                           prop="result_img"
-                          label="术前术后对比图:">
-              <upload :file-list="postForm.result_img"
+                          label="项目对比图:">
+              <upload :file-list="listFileListUrl"
                       @success="handleListSubmit">
                 <el-button icon="el-icon-plus"
                            type="primary">添加图片</el-button>
@@ -88,57 +78,24 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-card>
-          <div slot="header"
-               class="card-header">
-            <span>日记详情</span>
-            <span>
-              <el-button type="primary"
-                         icon="el-icon-plus"
-                         @click="addTimeList">添加日记</el-button>
-            </span>
-          </div>
-          <el-tabs tab-position="left"
-                   class="custom-tabs">
-            <el-tab-pane v-for="(item,index) in postForm.time_list"
-                         :key="index"
-                         :label="`日记${index+1}`">
-              <el-form-item :rules="[
-                              { required: true, message: '请填写恢复天数', trigger: 'change' }
-                            ]"
-                            :prop="`time_list.${index}.title`"
-                            label="恢复天数">
-                <el-row type="flex"
-                        justify="space-between">
-                  <el-col :span="6">
-                    <el-input v-model="item.title"></el-input>
-                  </el-col>
-                  <el-col :span="3"
-                          style="text-align:right;">
-                    <el-button v-if="index > 0"
-                               type="danger"
-                               icon="el-icon-delete"
-                               size="small"
-                               @click="removeTimeList(index)">删除日记</el-button>
-                  </el-col>
-                </el-row>
-              </el-form-item>
-              <el-form-item label="日记照片">
-                <upload multiple
-                        list-type="picture-card"
-                        @success="(file) => { handleDiarySuccess(file, index) }">
-                  <i class="el-icon-plus"></i>
-                </upload>
-              </el-form-item>
-              <el-form-item :prop="`time_list.${index}.content`"
-                            label="恢复日记">
-                <Tinymce ref="editor"
-                         :height="400"
-                         v-model="item.content" />
-              </el-form-item>
-            </el-tab-pane>
-          </el-tabs>
-        </el-card>
+        <el-row :gutter="60">
+          <el-col :span="12">
+            <el-form-item label="技术优势">
+              <Tinymce ref="editor"
+                       :height="200" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="适用人群">
+              <Tinymce ref="editor"
+                       :height="200" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="项目内容">
+          <Tinymce ref="editor"
+                   :height="400" />
+        </el-form-item>
       </div>
     </el-form>
   </div>
@@ -150,6 +107,7 @@ import MDinput from '@/components/MDinput'
 import Tags from '@/components/Tags'
 import Upload from '@/components/Upload'
 import Sticky from '@/components/Sticky'
+import config from '@/config'
 
 const defaultForm = {
   result_img: '',
@@ -188,6 +146,26 @@ export default {
     }
   },
   computed: {
+    imgFileListUrl() {
+      if (this.postForm.head_img) {
+        return [
+          {
+            url: `${config.qiniuURL}/${this.postForm.head_img}`,
+            name: this.postForm.head_img
+          }
+        ]
+      }
+    },
+    listFileListUrl() {
+      if (this.postForm.result_img) {
+        return [
+          {
+            url: `${config.qiniuURL}/${this.postForm.result_img}`,
+            name: this.postForm.result_img
+          }
+        ]
+      }
+    },
     contentShortLength() {
       return this.postForm.introduction.length
     }
@@ -208,9 +186,6 @@ export default {
     handleListSubmit(file) {
       this.postForm.result_img = file.key
     },
-    handleDiarySuccess(file, index) {
-      this.postForm.time_list[index].photos.push(file.key)
-    },
     // 添加日记
     addTimeList() {
       this.postForm.time_list.push({
@@ -227,7 +202,7 @@ export default {
     handleSubmit() {
       this.$refs.postForm.validate(valid => {
         if (valid) {
-          console.log(this.postForm)
+          return
         }
       })
     }
@@ -250,7 +225,6 @@ export default {
       }
     }
     .editor-container {
-      min-height: 500px;
       margin: 0 0 30px;
       .editor-upload-btn-container {
         text-align: right;

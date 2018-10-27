@@ -53,7 +53,7 @@
       <cascader slot="cascader"
                 :options="cateList"
                 :select-options.sync="selectOpitons"
-                placeholder="案例日记"
+                placeholder="项目中心"
                 @change="handleCascaderChange"></cascader>
     </category-dialog>
   </div>
@@ -62,8 +62,8 @@
 import CategoryDialog from './components/CategoryDialog'
 import Cascader from '@/components/Cascader'
 import { create, index, update, del } from '@/api/contentClass'
-const CHANNELID = 13
-const CHANNELNAME = '案例日记'
+const CHANNELID = 14
+const CHANNELNAME = '项目中心'
 
 export default {
   components: {

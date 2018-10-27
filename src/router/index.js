@@ -50,20 +50,7 @@ export const constantRouterMap = [
         path: 'index',
         component: () => import('@/views/topchannel/index'),
         name: 'Topchannel',
-        meta: { title: '顶级栏目', icon: 'nested' }
-      }
-    ]
-  },
-  {
-    path: '/contentclass',
-    component: Layout,
-    redirect: '/contentclass/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/contentclass/index'),
-        name: 'ContentClass',
-        meta: { title: '分类', icon: 'nested' }
+        meta: { title: '顶级栏目', icon: 'excel' }
       }
     ]
   },
@@ -131,6 +118,43 @@ export const constantRouterMap = [
         component: () => import('@/views/case/edit'),
         name: 'CaseEditArticle',
         meta: { title: '编辑案例', noCache: true },
+        hidden: true
+      }
+    ]
+  },
+  {
+    path: '/project',
+    component: Layout,
+    redirect: '/project/create',
+    name: 'Project',
+    meta: {
+      title: '项目中心',
+      icon: 'star'
+    },
+    children: [
+      {
+        path: 'category',
+        component: () => import('@/views/project/category'),
+        name: 'ProjectCategory',
+        meta: { title: '项目分类', icon: 'nested' }
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/project/list'),
+        name: 'ProjectArticleList',
+        meta: { title: '文章列表', icon: 'list' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/project/create'),
+        name: 'ProjectCreateArticle',
+        meta: { title: '新建文章', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id',
+        component: () => import('@/views/project/edit'),
+        name: 'ProjectEditArticle',
+        meta: { title: '编辑文章', noCache: true },
         hidden: true
       }
     ]
