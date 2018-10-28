@@ -119,12 +119,12 @@
               <el-form-item :rules="[
                               { required: true, message: '请填写恢复天数', trigger: 'change' }
                             ]"
-                            :prop="`time_list.${index}.title`"
+                            :prop="`time_list.${index}.recovery_day`"
                             label="恢复天数">
                 <el-row type="flex"
                         justify="space-between">
                   <el-col :span="6">
-                    <el-input v-model="item.title"></el-input>
+                    <el-input v-model="item.recovery_day"></el-input>
                   </el-col>
                   <el-col :span="3"
                           style="text-align:right;">
@@ -178,7 +178,7 @@ const defaultForm = {
   class_id: '',
   time_list: [
     {
-      title: '',
+      recovery_day: '',
       content: '',
       photos: []
     }
