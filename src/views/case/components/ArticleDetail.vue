@@ -10,7 +10,8 @@
                    type="success"
                    @click="handleSubmit">发布
         </el-button>
-        <el-button type="warning">草稿</el-button>
+        <el-button type="warning"
+                   @click="handleDraft">草稿</el-button>
       </sticky>
       <div class="createPost-main-container">
         <el-form-item :rules="[
@@ -114,6 +115,7 @@
           <el-tabs tab-position="left"
                    class="custom-tabs">
             <el-tab-pane v-for="(item,index) in postForm.time_list"
+                         :lazy="true"
                          :key="index"
                          :label="`日记${index+1}`">
               <el-form-item :rules="[
@@ -136,8 +138,11 @@
                   </el-col>
                 </el-row>
               </el-form-item>
-              <el-form-item label="日记照片">
-                <upload multiple
+              <el-form-item :prop="`time_list.${index}.photos`"
+                            label="日记照片">
+                <upload :file-list="item.photos"
+                        :key="index"
+                        multiple
                         list-type="picture-card"
                         @success="(file) => { handleDiarySuccess(file, index) }">
                   <i class="el-icon-plus"></i>
@@ -163,7 +168,7 @@ import MDinput from '@/components/MDinput'
 import Tags from '@/components/Tags'
 import Upload from '@/components/Upload'
 import Sticky from '@/components/Sticky'
-import { create } from '@/api/case'
+import { create, edit, update } from '@/api/case'
 import { index as getClassIndex } from '@/api/contentClass'
 
 const CHANNELID = 13
@@ -219,6 +224,16 @@ export default {
         )
       }
     })
+    if (this.isEdit) {
+      const { id } = this.$route.params
+      edit(id).then(res => {
+        if (res.code === 200) {
+          this.postForm = res.data
+        }
+      })
+    } else {
+      this.postForm = Object.assign({}, defaultForm)
+    }
   },
   methods: {
     handleInputAdd(val) {
@@ -241,7 +256,7 @@ export default {
     // 添加日记
     addTimeList() {
       this.postForm.time_list.push({
-        title: '',
+        recovery_day: '',
         content: '',
         photos: []
       })
@@ -252,13 +267,40 @@ export default {
       })
     },
     handleSubmit() {
+      this.submit(Object.assign(this.postForm, { status: 1 }))
+    },
+    handleDraft() {
+      this.submit(Object.assign(this.postForm, { status: 0 }))
+    },
+    submit(postForm) {
       this.$refs.postForm.validate(valid => {
         if (valid) {
-          create(this.postForm).then(res => {
-            if (res.code === 200) {
-              this.$notify.success('保存成功')
-            }
-          })
+          const { id } = this.$route.params
+          if (id) {
+            update(id, postForm).then(res => {
+              if (res.code === 200) {
+                this.$router.push({ name: 'CaseArticleList' })
+                this.$notify({
+                  title: '成功',
+                  message: '更新案例成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
+            })
+          } else {
+            create(postForm).then(res => {
+              if (res.code === 200) {
+                this.$router.push({ name: 'CaseArticleList' })
+                this.$notify({
+                  title: '成功',
+                  message: '发布文章成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
+            })
+          }
         }
       })
     }

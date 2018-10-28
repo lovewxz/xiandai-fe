@@ -175,10 +175,10 @@ export default {
       this.postForm.list_url = file.key
     },
     handleSubmit() {
-      this.submit(Object.assign(this.postForm, { status: '1' }))
+      this.submit(Object.assign(this.postForm, { status: 1 }))
     },
     handleDraft() {
-      this.submit(Object.assign(this.postForm, { status: '0' }))
+      this.submit(Object.assign(this.postForm, { status: 0 }))
     },
     submit(postForm) {
       this.$refs.postForm.validate(valid => {

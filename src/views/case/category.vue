@@ -176,7 +176,8 @@ export default {
       data.forEach(item => {
         const parent = map[item.parent_id]
         if (parent) {
-          parent.children || (parent.children = []).push(item)
+          parent.children = parent.children ? parent.children : []
+          parent.children.push(item)
         } else {
           list.push(item)
         }
