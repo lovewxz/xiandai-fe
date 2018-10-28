@@ -25,7 +25,21 @@
             标题
           </MDinput>
         </el-form-item>
-        <el-row>
+        <el-row :gutter="60">
+          <el-col :span="6">
+            <el-form-item :rules="[
+                            { required: true, message: '请选择栏目', trigger: 'change' }
+                          ]"
+                          prop="class_id"
+                          label="所选栏目">
+              <el-select v-model="postForm.class_id">
+                <el-option v-for="item in classOptions"
+                           :key="item.class_id"
+                           :value="item.class_id"
+                           :label="item.class_name"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
           <el-col :span="6">
             <el-form-item :rules="[
                             { required: true, message: '请输入案例姓名', trigger: 'change' }
@@ -35,8 +49,7 @@
               <el-input v-model="postForm.name"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="12"
-                  :offset="3">
+          <el-col :span="12">
             <el-form-item prop="build_plan"
                           label="打造方案">
               <tags :dynamic-tags="postForm.build_plan"
@@ -150,6 +163,10 @@ import MDinput from '@/components/MDinput'
 import Tags from '@/components/Tags'
 import Upload from '@/components/Upload'
 import Sticky from '@/components/Sticky'
+import { create } from '@/api/case'
+import { index as getClassIndex } from '@/api/contentClass'
+
+const CHANNELID = 13
 
 const defaultForm = {
   result_img: '',
@@ -158,6 +175,7 @@ const defaultForm = {
   introduction: '',
   name: '',
   build_plan: [],
+  class_id: '',
   time_list: [
     {
       title: '',
@@ -184,7 +202,8 @@ export default {
   data() {
     return {
       postForm: Object.assign({}, defaultForm),
-      loading: false
+      loading: false,
+      classOptions: []
     }
   },
   computed: {
@@ -192,7 +211,15 @@ export default {
       return this.postForm.introduction.length
     }
   },
-  created() {},
+  created() {
+    getClassIndex().then(res => {
+      if (res.code === 200) {
+        this.classOptions = res.data.filter(
+          item => item.channel_id === CHANNELID
+        )
+      }
+    })
+  },
   methods: {
     handleInputAdd(val) {
       this.postForm.build_plan.push(val)
@@ -227,7 +254,11 @@ export default {
     handleSubmit() {
       this.$refs.postForm.validate(valid => {
         if (valid) {
-          console.log(this.postForm)
+          create(this.postForm).then(res => {
+            if (res.code === 200) {
+              this.$notify.success('保存成功')
+            }
+          })
         }
       })
     }
