@@ -10,7 +10,8 @@
                    type="success"
                    @click="handleSubmit">发布
         </el-button>
-        <el-button type="warning">草稿</el-button>
+        <el-button type="warning"
+                   @click="handleDraft">草稿</el-button>
       </sticky>
       <div class="createPost-main-container">
         <el-form-item :rules="[
@@ -142,6 +143,7 @@ import Sticky from '@/components/Sticky'
 import Cascader from '@/components/Cascader'
 import { index as getDoctorList } from '@/api/doctor'
 import { index as getClassList } from '@/api/contentClass'
+import { create, update } from '@/api/project'
 import { arrToTree } from '@/utils'
 const CHANNELID = 14
 
@@ -233,9 +235,40 @@ export default {
       })
     },
     handleSubmit() {
+      this.submit(Object.assign(this.postForm, { status: 1 }))
+    },
+    handleDraft() {
+      this.submit(Object.assign(this.postForm, { status: 0 }))
+    },
+    submit(postForm) {
       this.$refs.postForm.validate(valid => {
         if (valid) {
-          console.log(this.postForm)
+          const { id } = this.$route.params
+          if (id) {
+            update(id, postForm).then(res => {
+              if (res.code === 200) {
+                this.$router.push({ name: 'ProjectArticleList' })
+                this.$notify({
+                  title: '成功',
+                  message: '更新案例成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
+            })
+          } else {
+            create(postForm).then(res => {
+              if (res.code === 200) {
+                this.$router.push({ name: 'ProjectArticleList' })
+                this.$notify({
+                  title: '成功',
+                  message: '发布文章成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
+            })
+          }
         }
       })
     },
