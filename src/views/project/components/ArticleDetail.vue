@@ -143,7 +143,7 @@ import Sticky from '@/components/Sticky'
 import Cascader from '@/components/Cascader'
 import { index as getDoctorList } from '@/api/doctor'
 import { index as getClassList } from '@/api/contentClass'
-import { create, update } from '@/api/project'
+import { create, update, edit } from '@/api/project'
 import { arrToTree } from '@/utils'
 const CHANNELID = 14
 
@@ -202,6 +202,16 @@ export default {
         this.classList = res.data.filter(item => item.channel_id === CHANNELID)
       }
     })
+    if (this.isEdit) {
+      const { id } = this.$route.params
+      edit(id).then(res => {
+        if (res.code === 200) {
+          this.postForm = res.data
+        }
+      })
+    } else {
+      this.postForm = Object.assign({}, defaultForm)
+    }
   },
   methods: {
     handleInputAdd(val) {

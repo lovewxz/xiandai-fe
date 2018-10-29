@@ -145,19 +145,19 @@ export const constantRouterMap = [
         path: 'list',
         component: () => import('@/views/project/list'),
         name: 'ProjectArticleList',
-        meta: { title: '文章列表', icon: 'list' }
+        meta: { title: '项目列表', icon: 'list' }
       },
       {
         path: 'create',
         component: () => import('@/views/project/create'),
         name: 'ProjectCreateArticle',
-        meta: { title: '新建文章', icon: 'edit' }
+        meta: { title: '新建项目', icon: 'edit' }
       },
       {
         path: 'edit/:id',
         component: () => import('@/views/project/edit'),
         name: 'ProjectEditArticle',
-        meta: { title: '编辑文章', noCache: true },
+        meta: { title: '编辑项目', noCache: true },
         hidden: true
       }
     ]

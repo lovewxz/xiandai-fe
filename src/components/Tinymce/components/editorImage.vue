@@ -9,6 +9,8 @@
     <el-dialog :visible.sync="dialogVisible">
       <upload :multiple="true"
               :file-list="fileList"
+              list-type="picture-card"
+              class="edit-upload"
               @success="handleSuccess"
               @remove="handleRemove">
         <el-button size="small"
@@ -77,5 +79,8 @@ export default {
   /deep/ .el-upload--picture-card {
     width: 100%;
   }
+}
+.edit-upload {
+  margin-bottom: 30px;
 }
 </style>

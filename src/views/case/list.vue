@@ -18,7 +18,7 @@
                        align="center">
         <template slot-scope="scope">
           <img :src="`${config.qiniuURL}/${scope.row.head_img}?imageView2/1/w/80/h/80`">
-        </template>>
+        </template>
       </el-table-column>
       <el-table-column label="模特姓名"
                        prop="name"
