@@ -7,6 +7,7 @@
              :file-list="picList"
              :multiple="multiple"
              :list-type="listType"
+             :show-file-list="showFileList"
              action="//up-z2.qiniu.com/"
              class="upload">
     <slot></slot>
@@ -33,6 +34,10 @@ export default {
     listType: {
       type: String,
       default: 'picture'
+    },
+    showFileList: {
+      type: Boolean,
+      default: true
     }
   },
   data() {

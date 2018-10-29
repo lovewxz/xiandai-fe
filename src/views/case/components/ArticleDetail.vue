@@ -29,16 +29,13 @@
         <el-row :gutter="60">
           <el-col :span="6">
             <el-form-item :rules="[
-                            { required: true, message: '请选择栏目', trigger: 'change' }
+                            { required: true, message: '请选择栏目', trigger: 'blur' }
                           ]"
                           prop="class_id"
                           label="所选栏目">
-              <el-select v-model="postForm.class_id">
-                <el-option v-for="item in classOptions"
-                           :key="item.class_id"
-                           :value="item.class_id"
-                           :label="item.class_name"></el-option>
-              </el-select>
+              <cascader :select-options="_getPath(list, postForm.class_id, [])"
+                        :options="classOptions"
+                        @change="handleCascaderChange"></cascader>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -112,11 +109,13 @@
                          @click="addTimeList">添加日记</el-button>
             </span>
           </div>
-          <el-tabs tab-position="left"
-                   class="custom-tabs">
+          <el-tabs v-model="activeName"
+                   tab-position="left"
+                   class="custom-tabs"
+                   @tab-click="handleTabClick">
             <el-tab-pane v-for="(item,index) in postForm.time_list"
-                         :lazy="true"
                          :key="index"
+                         :name="index.toString()"
                          :label="`日记${index+1}`">
               <el-form-item :rules="[
                               { required: true, message: '请填写恢复天数', trigger: 'change' }
@@ -168,8 +167,10 @@ import MDinput from '@/components/MDinput'
 import Tags from '@/components/Tags'
 import Upload from '@/components/Upload'
 import Sticky from '@/components/Sticky'
+import Cascader from '@/components/Cascader'
 import { create, edit, update } from '@/api/case'
 import { index as getClassIndex } from '@/api/contentClass'
+import { arrToTree } from '@/utils'
 
 const CHANNELID = 13
 
@@ -196,7 +197,8 @@ export default {
     MDinput,
     Tags,
     Upload,
-    Sticky
+    Sticky,
+    Cascader
   },
   props: {
     isEdit: {
@@ -208,20 +210,22 @@ export default {
     return {
       postForm: Object.assign({}, defaultForm),
       loading: false,
-      classOptions: []
+      activeName: '0',
+      list: [] // 下拉数据
     }
   },
   computed: {
     contentShortLength() {
       return this.postForm.introduction.length
+    },
+    classOptions() {
+      return arrToTree(this.list)
     }
   },
   created() {
     getClassIndex().then(res => {
       if (res.code === 200) {
-        this.classOptions = res.data.filter(
-          item => item.channel_id === CHANNELID
-        )
+        this.list = res.data.filter(item => item.channel_id === CHANNELID)
       }
     })
     if (this.isEdit) {
@@ -261,10 +265,19 @@ export default {
         photos: []
       })
     },
+    // hack方法，切换图片不消失
+    handleTabClick() {
+      const arr = this.postForm.time_list[this.activeName].photos.concat([])
+      this.postForm.time_list[this.activeName].photos = []
+      this.postForm.time_list[this.activeName].photos = arr
+    },
     removeTimeList(index) {
       this.$confirm('是否删除本篇日记?', '删除').then(() => {
         this.postForm.time_list.splice(index, 1)
       })
+    },
+    handleCascaderChange(value) {
+      this.postForm.class_id = value.slice(-1)[0]
     },
     handleSubmit() {
       this.submit(Object.assign(this.postForm, { status: 1 }))
@@ -303,6 +316,16 @@ export default {
           }
         }
       })
+    },
+    // 获取路径
+    _getPath(arr, id, res) {
+      arr.forEach(item => {
+        if (item.class_id === id) {
+          res.unshift(item.class_id)
+          this._getPath(arr, item.parent_id, res)
+        }
+      })
+      return res
     }
   }
 }

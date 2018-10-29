@@ -31,13 +31,16 @@ export const constantRouterMap = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    name: 'Dashboard',
-    hidden: true,
+    redirect: '/index',
+    name: 'Index',
     children: [
       {
-        path: 'dashboard',
-        component: () => import('@/views/dashboard/index')
+        path: 'index',
+        component: () => import('@/views/index/index'),
+        meta: {
+          title: '首页设置',
+          icon: 'guide'
+        }
       }
     ]
   },

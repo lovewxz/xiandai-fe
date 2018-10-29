@@ -62,6 +62,7 @@
 import CategoryDialog from './components/CategoryDialog'
 import Cascader from '@/components/Cascader'
 import { create, index, update, del } from '@/api/contentClass'
+import { arrToTree } from '@/utils'
 const CHANNELID = 13
 const CHANNELNAME = '案例日记'
 
@@ -137,6 +138,7 @@ export default {
         update(form).then(res => {
           if (res.code === 200) {
             this.$refs.dialog.hide()
+            this.getIndex()
           }
         })
       } else {
@@ -148,6 +150,7 @@ export default {
         ).then(res => {
           if (res.code === 200) {
             this.$refs.dialog.hide()
+            this.getIndex()
           }
         })
       }
@@ -162,27 +165,11 @@ export default {
     getIndex() {
       index().then(res => {
         if (res.code === 200) {
-          this.cateList = this._toTree(
+          this.cateList = arrToTree(
             res.data.filter(item => item.channel_id === this.channelId)
           )
         }
       })
-    },
-    _toTree(data) {
-      data.forEach(item => delete item.children)
-      const map = {}
-      data.forEach(item => (map[item.class_id] = item))
-      const list = []
-      data.forEach(item => {
-        const parent = map[item.parent_id]
-        if (parent) {
-          parent.children = parent.children ? parent.children : []
-          parent.children.push(item)
-        } else {
-          list.push(item)
-        }
-      })
-      return list
     },
     _toSelectOptionsArr(node, arr) {
       if (node.level > 1) {

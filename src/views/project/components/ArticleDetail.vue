@@ -26,23 +26,40 @@
           </MDinput>
         </el-form-item>
         <el-row>
-          <el-col :span="6">
+          <el-col :span="8">
             <el-form-item :rules="[
                             { required: true, message: '请选择推荐医生', trigger: 'change' }
                           ]"
-                          prop="name"
+                          prop="doctor_id"
                           label="推荐医生">
-              <el-input v-model="postForm.doctor_id"></el-input>
+              <el-select v-model="postForm.doctor_id"
+                         multiple>
+                <el-option v-for="item in doctorList"
+                           :key="item.id"
+                           :value="item.id"
+                           :label="item.doctor_name"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item :rules="[
+                            { required: true, message: '请选择栏目', trigger: 'blur' }
+                          ]"
+                          prop="class_id"
+                          label="所选栏目">
+              <cascader :select-options="_getPath(classList, postForm.class_id, [])"
+                        :options="classOptionList"
+                        @change="handleCascaderChange"></cascader>
             </el-form-item>
           </el-col>
         </el-row>
         <el-form-item :rules="[
                         { required: true, message: '请输入恢复时间', trigger: 'change' }
                       ]"
-                      prop="introduction"
+                      prop="recover_time"
                       label="恢复时间">
           <el-input :row="1"
-                    v-model="postForm.introduction"
+                    v-model="postForm.recover_time"
                     type="textarea"
                     class="article-textarea"
                     autosize
@@ -57,7 +74,7 @@
                           ]"
                           prop="head_img"
                           label="项目图标:">
-              <upload :file-list="imgFileListUrl"
+              <upload :file-list="postForm.head_img"
                       @success="handleIMGSubmit">
                 <el-button icon="el-icon-plus"
                            type="primary">添加图片</el-button>
@@ -70,7 +87,7 @@
                           ]"
                           prop="result_img"
                           label="项目对比图:">
-              <upload :file-list="listFileListUrl"
+              <upload :file-list="postForm.result_img"
                       @success="handleListSubmit">
                 <el-button icon="el-icon-plus"
                            type="primary">添加图片</el-button>
@@ -80,20 +97,35 @@
         </el-row>
         <el-row :gutter="60">
           <el-col :span="12">
-            <el-form-item label="技术优势">
+            <el-form-item :rules="[
+                            { required: true, message: '请添加技术优势', trigger: 'blur' }
+                          ]"
+                          prop="advantange"
+                          label="技术优势">
               <Tinymce ref="editor"
+                       v-model="postForm.advantange"
                        :height="200" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="适用人群">
+            <el-form-item :rules="[
+                            { required: true, message: '请填写适用人群', trigger: 'blur' }
+                          ]"
+                          prop="fit_people"
+                          label="适用人群">
               <Tinymce ref="editor"
+                       v-model="postForm.fit_people"
                        :height="200" />
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="项目内容">
+        <el-form-item :rules="[
+                        { required: true, message: '请填写项目内容', trigger: 'blur' }
+                      ]"
+                      prop="content"
+                      label="项目内容">
           <Tinymce ref="editor"
+                   v-model="postForm.content"
                    :height="400" />
         </el-form-item>
       </div>
@@ -107,22 +139,23 @@ import MDinput from '@/components/MDinput'
 import Tags from '@/components/Tags'
 import Upload from '@/components/Upload'
 import Sticky from '@/components/Sticky'
-import config from '@/config'
+import Cascader from '@/components/Cascader'
+import { index as getDoctorList } from '@/api/doctor'
+import { index as getClassList } from '@/api/contentClass'
+import { arrToTree } from '@/utils'
+const CHANNELID = 14
 
 const defaultForm = {
-  result_img: '',
-  head_img: '',
-  title: '',
-  introduction: '',
-  name: '',
-  build_plan: [],
-  time_list: [
-    {
-      title: '',
-      content: '',
-      photos: []
-    }
-  ]
+  result_img: '', // 案例对比图
+  head_img: '', // 项目图标
+  title: '', // 标题
+  recover_time: '', // 恢复时间
+  doctor_id: [], // 推荐医生
+  class_id: '',
+  fit_people: '', // 适用人群
+  advantange: '', // 技术优势
+  content: '', // 项目内容
+  status: 1
 }
 
 export default {
@@ -131,7 +164,8 @@ export default {
     MDinput,
     Tags,
     Upload,
-    Sticky
+    Sticky,
+    Cascader
   },
   props: {
     isEdit: {
@@ -142,35 +176,31 @@ export default {
   data() {
     return {
       postForm: Object.assign({}, defaultForm),
-      loading: false
+      loading: false,
+      doctorList: [],
+      classList: []
     }
   },
   computed: {
-    imgFileListUrl() {
-      if (this.postForm.head_img) {
-        return [
-          {
-            url: `${config.qiniuURL}/${this.postForm.head_img}`,
-            name: this.postForm.head_img
-          }
-        ]
-      }
-    },
-    listFileListUrl() {
-      if (this.postForm.result_img) {
-        return [
-          {
-            url: `${config.qiniuURL}/${this.postForm.result_img}`,
-            name: this.postForm.result_img
-          }
-        ]
-      }
-    },
     contentShortLength() {
-      return this.postForm.introduction.length
+      return this.postForm.recover_time.length
+    },
+    classOptionList() {
+      return arrToTree(this.classList)
     }
   },
-  created() {},
+  created() {
+    getDoctorList().then(res => {
+      if (res.code === 200) {
+        this.doctorList = res.data
+      }
+    })
+    getClassList().then(res => {
+      if (res.code === 200) {
+        this.classList = res.data.filter(item => item.channel_id === CHANNELID)
+      }
+    })
+  },
   methods: {
     handleInputAdd(val) {
       this.postForm.build_plan.push(val)
@@ -185,6 +215,9 @@ export default {
     // 列表缩略图
     handleListSubmit(file) {
       this.postForm.result_img = file.key
+    },
+    handleCascaderChange(value) {
+      this.postForm.class_id = value.slice(-1)[0]
     },
     // 添加日记
     addTimeList() {
@@ -202,9 +235,19 @@ export default {
     handleSubmit() {
       this.$refs.postForm.validate(valid => {
         if (valid) {
-          return
+          console.log(this.postForm)
         }
       })
+    },
+    // 获取路径
+    _getPath(arr, id, res) {
+      arr.forEach(item => {
+        if (item.class_id === id) {
+          res.unshift(item.class_id)
+          this._getPath(arr, item.parent_id, res)
+        }
+      })
+      return res
     }
   }
 }
