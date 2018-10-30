@@ -54,6 +54,7 @@ import PartItem from './components/PartItem'
 import PartItemSale from './components/PartItemSale'
 import Upload from '@/components/Upload'
 import Sticky from '@/components/Sticky'
+import { update, edit } from '@/api'
 
 export default {
   components: {
@@ -75,6 +76,13 @@ export default {
       loading: false
     }
   },
+  created() {
+    edit().then(res => {
+      if (res.code === 200) {
+        this.postForm = res.data
+      }
+    })
+  },
   methods: {
     handleGroupPhotoSubmit(file) {
       this.postForm.group_photo = file.key
@@ -83,7 +91,17 @@ export default {
       this.postForm.swt_pic = file.key
     },
     handleSave() {
-      console.log(this.postForm)
+      this.loading = true
+      update(this.postForm)
+        .then(res => {
+          if (res.code === 200) {
+            this.loading = false
+            this.$notify.success('保存成功')
+          }
+        })
+        .catch(() => {
+          this.loading = false
+        })
     }
   }
 }
