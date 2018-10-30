@@ -2,7 +2,7 @@
   <div class="topchannel-wrapper">
     <div class="topchannel-nav">
       <el-button type="primary"
-                 @click.stop="addDoctor">添加医生</el-button>
+                 @click.stop="addNews">添加案例</el-button>
     </div>
     <el-table :data="tableData"
               border
@@ -14,36 +14,22 @@
           {{ scope.row.id }}
         </template>>
       </el-table-column>
-      <el-table-column label="医生图片"
-                       align="center"
-                       width="100">
-        <template slot-scope="scope">
-          <img :src="`${config.qiniuURL}/${scope.row.img_url}?imageView2/1/w/80/h/80`">
-        </template>>
-      </el-table-column>
       <el-table-column label="标题"
-                       prop="title"
                        align="center"
-                       min-width="200">
+                       prop="title">
       </el-table-column>
-      <el-table-column label="医生姓名"
-                       prop="doctor_name"
-                       width="100"
-                       align="center">
-      </el-table-column>
-      <el-table-column label="擅长项目"
-                       align="center">
+      <el-table-column label="重要性"
+                       align="center"
+                       width="150">
         <template slot-scope="scope">
-          {{ scope.row.goods_project }}
-        </template>>
-      </el-table-column>
-      <el-table-column label="预约次数"
-                       prop="appointment_count"
-                       align="center">
-      </el-table-column>
-      <el-table-column label="点赞数"
-                       prop="up_hits"
-                       align="center">
+          <el-rate :value="scope.row.importance"
+                   :max="3"
+                   :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                   :low-threshold="1"
+                   :high-threshold="3"
+                   style="margin-top:8px;">
+          </el-rate>
+        </template>
       </el-table-column>
       <el-table-column label="操作"
                        align="center"
@@ -58,11 +44,19 @@
         </template>
       </el-table-column>
     </el-table>
+    <div class="page-wrapper">
+      <el-pagination :page-size="pageSize"
+                     :total="totalCount"
+                     background
+                     layout="prev, pager, next"
+                     @current-change="handlePageChange">
+      </el-pagination>
+    </div>
   </div>
 </template>
 
 <script>
-import { index, del } from '@/api/doctor'
+import { index, del } from '@/api/news'
 import config from '@/config'
 
 export default {
@@ -70,18 +64,21 @@ export default {
     return {
       btnLoading: false,
       config: config,
-      tableData: []
+      tableData: [],
+      pageSize: 10,
+      pageNo: 1,
+      totalCount: 0
     }
   },
   mounted() {
-    this.getIndex()
+    this.getIndex({ pageSize: this.pageSize, pageNo: this.pageNo })
   },
   methods: {
     handleEdit(row) {
-      this.$router.push({ name: 'DoctorEditArticle', params: { id: row.id } })
+      this.$router.push({ name: 'NewsEditArticle', params: { id: row.id } })
     },
     handleDel(row) {
-      this.$confirm(`是否删除${row.doctor_name}?`, '删除', {
+      this.$confirm(`是否删除${row.name}?`, '删除', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
@@ -92,13 +89,19 @@ export default {
         })
       })
     },
-    getIndex() {
-      index().then(res => {
-        this.tableData = res.data.detail
+    handlePageChange(curPage) {
+      this.getIndex({ pageSize: this.pageSize, pageNo: curPage })
+    },
+    getIndex(params) {
+      index(params).then(res => {
+        if (res.code === 200) {
+          this.tableData = res.data.detail
+          this.totalCount = res.data.summary.totalCount
+        }
       })
     },
-    addDoctor() {
-      this.$router.push({ name: 'DoctorCreateArticle' })
+    addNews() {
+      this.$router.push({ name: 'NewsCreateArticle' })
     }
   }
 }
@@ -111,6 +114,11 @@ export default {
     margin-bottom: 30px;
     display: flex;
     justify-content: flex-end;
+  }
+  .page-wrapper {
+    width: 100%;
+    margin-top: 30px;
+    text-align: center;
   }
 }
 </style>

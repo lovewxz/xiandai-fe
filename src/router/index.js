@@ -162,6 +162,37 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/news',
+    component: Layout,
+    redirect: '/news/create',
+    name: 'News',
+    meta: {
+      title: '新闻中心',
+      icon: 'message'
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/news/list'),
+        name: 'NewsArticleList',
+        meta: { title: '新闻列表', icon: 'list' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/news/create'),
+        name: 'NewsCreateArticle',
+        meta: { title: '新建新闻', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id',
+        component: () => import('@/views/news/edit'),
+        name: 'NewsEditArticle',
+        meta: { title: '编辑新闻', noCache: true },
+        hidden: true
+      }
+    ]
+  },
   { path: '*', redirect: '/404', hidden: true }
 ]
 

@@ -50,6 +50,10 @@ export default {
     fileList: {
       deep: true,
       handler(newVal) {
+        if (!newVal) {
+          this.picList = []
+          return
+        }
         newVal = Array.isArray(newVal) ? newVal : [newVal]
         this.picList = newVal.map(item => {
           return {
