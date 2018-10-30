@@ -56,6 +56,15 @@ import Upload from '@/components/Upload'
 import Sticky from '@/components/Sticky'
 import { update, edit } from '@/api'
 
+const defaultForm = {
+  banner: [],
+  icon: [],
+  beauty_share: [],
+  sale: [],
+  group_photo: '',
+  swt_pic: ''
+}
+
 export default {
   components: {
     PartItem,
@@ -65,14 +74,7 @@ export default {
   },
   data() {
     return {
-      postForm: {
-        banner: [],
-        icon: [],
-        beauty_share: [],
-        sale: [],
-        group_photo: '',
-        swt_pic: ''
-      },
+      postForm: Object.assign({}, defaultForm),
       loading: false
     }
   },
@@ -80,6 +82,8 @@ export default {
     edit().then(res => {
       if (res.code === 200) {
         this.postForm = res.data
+          ? Object.assign({}, res.data)
+          : Object.assign({}, defaultForm)
       }
     })
   },
