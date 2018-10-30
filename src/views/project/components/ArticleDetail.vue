@@ -194,7 +194,7 @@ export default {
   created() {
     getDoctorList().then(res => {
       if (res.code === 200) {
-        this.doctorList = res.data
+        this.doctorList = res.data.detail
       }
     })
     getClassList().then(res => {

@@ -208,7 +208,7 @@ export default {
   },
   data() {
     return {
-      postForm: Object.assign({}, defaultForm),
+      postForm: JSON.parse(JSON.stringify(defaultForm)),
       loading: false,
       activeName: '0',
       list: [] // 下拉数据
@@ -236,7 +236,7 @@ export default {
         }
       })
     } else {
-      this.postForm = Object.assign({}, defaultForm)
+      this.postForm = JSON.parse(JSON.stringify(defaultForm))
     }
   },
   methods: {
