@@ -1,153 +1,89 @@
 <template>
   <div class="index-wrapper">
-    <el-form>
-      <el-form-item label="首页幻灯片">
-        <drag-table custom-class="banner"
-                    @on-end="handleBannerOnEnd">
-          <el-table :data="bannerData"
-                    row-key="id"
-                    border
-                    fit
-                    highlight-current-row>
-            <el-table-column label="ID"
-                             prop="id"
-                             align="center"
-                             width="50">
-            </el-table-column>
-            <el-table-column align="center"
-                             prop="pic"
-                             label="图片"></el-table-column>
-            <el-table-column align="center"
-                             prop="link"
-                             label="链接地址"></el-table-column>
-            <el-table-column align="center"
-                             label="操作"
-                             width="300">
-              <template slot-scope="scope">
-                <el-button icon="el-icon-edit"
-                           type="primary"
-                           size="mini"
-                           @click="handleBannerEdit(scope.row)">编辑</el-button>
-                <el-button icon="el-icon-delete"
-                           type="danger"
-                           size="mini"
-                           @click="handleBannerDel(scope.row.id)">删除</el-button>
-                <el-button icon="el-icon-rank"
-                           type="warning"
-                           size="mini">拖动</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </drag-table>
-        <el-button type="primary"
-                   class="form-btn"
-                   @click="handleAddBanner">添加幻灯片</el-button>
-        <banner-dialog ref="banner"
-                       :data="curBannerData"
-                       @submit="handleBannerSubmit"></banner-dialog>
-      </el-form-item>
-    </el-form>
-    <el-form>
-      <el-form-item label="首页图标">
-        <drag-table custom-class="icon"
-                    @on-end="handleBannerOnEnd">
-          <el-table :data="iconData"
-                    row-key="id"
-                    border
-                    fit
-                    highlight-current-row>
-            <el-table-column label="ID"
-                             prop="id"
-                             align="center"
-                             width="50">
-            </el-table-column>
-            <el-table-column align="center"
-                             prop="pic"
-                             label="图片"></el-table-column>
-            <el-table-column align="center"
-                             prop="link"
-                             label="链接地址"></el-table-column>
-            <el-table-column align="center"
-                             label="操作"
-                             width="300">
-              <template slot-scope="scope">
-                <el-button icon="el-icon-edit"
-                           type="primary"
-                           size="mini"
-                           @click="handleBannerEdit(scope.row)">编辑</el-button>
-                <el-button icon="el-icon-delete"
-                           type="danger"
-                           size="mini"
-                           @click="handleBannerDel(scope.row.id)">删除</el-button>
-                <el-button icon="el-icon-rank"
-                           type="warning"
-                           size="mini">拖动</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </drag-table>
-      </el-form-item>
-    </el-form>
+    <sticky>
+      <el-button :loading="loading"
+                 type="success"
+                 @click="handleSave">保存
+      </el-button>
+    </sticky>
+    <div class="create-post-main-wrapper">
+      <el-form>
+        <el-form-item label="首页幻灯片">
+          <part-item :list.sync="postForm.banner"
+                     title="幻灯片"
+                     class-name="banner"></part-item>
+        </el-form-item>
+        <el-form-item label="首页图标">
+          <part-item :list.sync="postForm.icon"
+                     title="图标"
+                     class-name="icon"></part-item>
+        </el-form-item>
+        <el-form-item label="首页优惠">
+          <part-item-sale :list.sync="postForm.sale"
+                          title="优惠"
+                          class-name="sale"></part-item-sale>
+        </el-form-item>
+        <el-form-item label="美丽分享馆">
+          <part-item :list.sync="postForm.beauty_share"
+                     title="案例"
+                     class-name="share"></part-item>
+        </el-form-item>
+        <el-card>
+          <el-form-item label="专家合照">
+            <upload :file-list="postForm.group_photo"
+                    @success="handleGroupPhotoSubmit">
+              <el-button icon="el-icon-plus"
+                         type="primary">添加合照</el-button>
+            </upload>
+          </el-form-item>
+          <el-form-item label="商务通">
+            <upload :file-list="postForm.swt_pic"
+                    @success="handleSwtSubmit">
+              <el-button icon="el-icon-plus"
+                         type="primary">添加商务通图片</el-button>
+            </upload>
+          </el-form-item>
+        </el-card>
+      </el-form>
+    </div>
   </div>
 </template>
 
 <script>
-import BannerDialog from './components/BannerDialog'
-import DragTable from './components/DragTable'
+import PartItem from './components/PartItem'
+import PartItemSale from './components/PartItemSale'
+import Upload from '@/components/Upload'
+import Sticky from '@/components/Sticky'
 
 export default {
   components: {
-    BannerDialog,
-    DragTable
+    PartItem,
+    PartItemSale,
+    Upload,
+    Sticky
   },
   data() {
     return {
-      bannerData: [],
-      iconData: [
-        {
-          id: 1,
-          pic: '11',
-          link: '22'
-        },
-        {
-          id: 2,
-          pic: '11',
-          link: '33'
-        },
-        {
-          id: 3,
-          pic: '22',
-          link: '44'
-        }
-      ],
-      curBannerData: {} // 当前banner数据
+      postForm: {
+        banner: [],
+        icon: [],
+        beauty_share: [],
+        sale: [],
+        group_photo: '',
+        swt_pic: ''
+      },
+      loading: false
     }
   },
   methods: {
-    handleAddBanner() {
-      this.$refs.banner.show()
-      this.$refs.banner.resetFields()
-      this.$refs.banner.reset()
+    handleGroupPhotoSubmit(file) {
+      this.postForm.group_photo = file.key
     },
-    handleBannerSubmit(row) {
-      if (row.id) {
-        const index = this.bannerData.findIndex(item => item.id === row.id)
-        this.bannerData.splice(index, 1, row)
-      } else {
-        this.bannerData.push(
-          Object.assign(row, { id: this.bannerData.length + 1 })
-        )
-      }
-      this.$refs.banner.hide()
+    handleSwtSubmit(file) {
+      this.postForm.swt_pic = file.key
     },
-    handleBannerEdit(row) {
-      this.curBannerData = row
-      this.$refs.banner.show()
-    },
-    handleBannerDel() {},
-    handleBannerOnEnd(evt) {
-      const tempIndex = this.bannerData.splice(evt.oldIndex, 1)[0]
-      this.bannerData.splice(evt.newIndex, 0, tempIndex)
+    handleSave() {
+      console.log(this.postForm)
     }
   }
 }
@@ -155,7 +91,9 @@ export default {
 
 <style lang="scss">
 .index-wrapper {
-  padding: 30px;
+  .create-post-main-wrapper {
+    padding: 30px;
+  }
   .form-btn {
     margin-top: 30px;
   }

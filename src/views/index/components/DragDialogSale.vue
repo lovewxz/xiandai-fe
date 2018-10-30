@@ -5,7 +5,7 @@
              :model="postForm"
              label-width="90px">
       <el-form-item :rules="[
-                      { required: true, message: '请添加banner图', trigger: 'blur' }
+                      { required: true, message: '缺少图片', trigger: 'blur' }
                     ]"
                     label="图片:"
                     prop="pic">
@@ -22,6 +22,20 @@
                     prop="link">
         <el-input v-model="postForm.link"></el-input>
       </el-form-item>
+      <el-form-item :rules="[
+                      { required: true, message: '请填写项目名称', trigger: 'blur' }
+                    ]"
+                    label="项目名称:"
+                    prop="project">
+        <el-input v-model="postForm.project"></el-input>
+      </el-form-item>
+      <el-form-item :rules="[
+                      { required: true, message: '请填写价格', trigger: 'blur' }
+                    ]"
+                    label="项目价格:"
+                    prop="price">
+        <el-input v-model="postForm.price"></el-input>
+      </el-form-item>
     </el-form>
     <span slot="footer"
           class="dialog-footer">
@@ -37,7 +51,9 @@ import Upload from '@/components/Upload'
 
 const defaultForm = {
   pic: null,
-  link: ''
+  link: '',
+  project: '',
+  price: ''
 }
 
 export default {
@@ -60,7 +76,14 @@ export default {
   },
   watch: {
     data(newVal) {
-      this.postForm = Object.assign({}, newVal)
+      if (newVal.id) {
+        this.postForm = Object.assign({}, newVal)
+      }
+    }
+  },
+  created() {
+    if (this.data.id) {
+      this.postForm = Object.assign({}, this.data)
     }
   },
   methods: {
@@ -73,7 +96,7 @@ export default {
     handleSubmit() {
       this.$refs.postForm.validate(valid => {
         if (valid) {
-          this.$emit('submit', this.postForm)
+          this.$emit('submit', Object.assign({}, this.postForm))
         }
       })
     },
