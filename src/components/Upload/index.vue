@@ -64,6 +64,16 @@ export default {
       }
     }
   },
+  created() {
+    if (!this.fileList) {
+      this.picList = []
+      return
+    }
+    this.picList = (Array.isArray(this.fileList)
+      ? this.fileList
+      : [this.fileList]
+    ).map(item => ({ url: `${config.qiniuURL}/${item}`, name: 'item' }))
+  },
   methods: {
     handleSuccess(response, file, fileList) {
       if (!this.multiple) {
