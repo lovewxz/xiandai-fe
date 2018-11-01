@@ -26,14 +26,41 @@
             标题
           </MDinput>
         </el-form-item>
-        <el-form-item label="重要性:">
-          <el-rate v-model="postForm.importance"
-                   :max="3"
-                   :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                   :low-threshold="1"
-                   :high-threshold="3"
-                   style="margin-top:8px;">
-          </el-rate>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="重要性:">
+              <el-rate v-model="postForm.importance"
+                       :max="3"
+                       :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                       :low-threshold="1"
+                       :high-threshold="3"
+                       style="margin-top:8px;">
+              </el-rate>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="列表缩略图:">
+              <upload :file-list="postForm.img_url"
+                      @success="handleIMGSubmit">
+                <el-button icon="el-icon-plus"
+                           type="primary">添加图片</el-button>
+              </upload>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item :rules="[
+                        { required: true, message: '请输入列表页简介', trigger: 'change' }
+                      ]"
+                      prop="introduction"
+                      label="列表页简介">
+          <el-input :row="1"
+                    v-model="postForm.introduction"
+                    type="textarea"
+                    class="article-textarea"
+                    autosize
+                    placeholder="请输入简介"></el-input>
+          <span v-show="contentShortLength"
+                class="word-counter">{{ contentShortLength }}字</span>
         </el-form-item>
         <el-form-item :rules="[
                         { required: true, message: '新闻内容不能为空', trigger: 'change' }
@@ -59,7 +86,9 @@ import { create, edit, update } from '@/api/news'
 const defaultForm = {
   title: '',
   importance: 0,
-  content: ''
+  content: '',
+  img_url: '',
+  introduction: ''
 }
 
 export default {
@@ -81,6 +110,11 @@ export default {
       loading: false
     }
   },
+  computed: {
+    contentShortLength() {
+      return this.postForm.introduction.length
+    }
+  },
   created() {
     if (this.isEdit) {
       const { id } = this.$route.params
@@ -94,6 +128,9 @@ export default {
     }
   },
   methods: {
+    handleIMGSubmit(file) {
+      this.postForm.img_url = file.key
+    },
     handleSubmit() {
       this.submit(Object.assign(this.postForm, { status: 1 }))
     },
